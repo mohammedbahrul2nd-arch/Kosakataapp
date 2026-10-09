@@ -20,13 +20,17 @@ jobs:
         distribution: 'temurin'
         cache: gradle
 
+    - name: Ekstrak File Zip
+      run: |
+        unzip KosakataApp.zip -d extracted_app
+
     - name: Find and Build
       run: |
-        # Cari file gradlew dan simpan jalurnya
-        GRADLEW_PATH=$(find . -name "gradlew" -type f | head -n 1)
+        # Cari file gradlew di dalam folder hasil ekstrak
+        GRADLEW_PATH=$(find ./extracted_app -name "gradlew" -type f | head -n 1)
         
         if [ -z "$GRADLEW_PATH" ]; then
-          echo "File gradlew tidak ditemukan!"
+          echo "File gradlew tidak ditemukan! Pastikan KosakataApp.zip berisi proyek Android yang benar."
           exit 1
         fi
         
