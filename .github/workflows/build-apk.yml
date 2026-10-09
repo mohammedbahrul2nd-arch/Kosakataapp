@@ -20,16 +20,28 @@ jobs:
         distribution: 'temurin'
         cache: gradle
 
-    - name: Grant execute permission for gradlew
-      run: chmod +x KosakataApp/gradlew
-
-    - name: Build APK with Gradle
+    - name: Find and Build
       run: |
-        cd KosakataApp
+        # Cari file gradlew dan simpan jalurnya
+        GRADLEW_PATH=$(find . -name "gradlew" -type f | head -n 1)
+        
+        if [ -z "$GRADLEW_PATH" ]; then
+          echo "File gradlew tidak ditemukan!"
+          exit 1
+        fi
+        
+        echo "gradlew ditemukan di: $GRADLEW_PATH"
+        
+        # Pindah ke direktori tempat gradlew berada
+        DIR_PATH=$(dirname "$GRADLEW_PATH")
+        cd "$DIR_PATH"
+        
+        # Beri izin eksekusi dan jalankan build
+        chmod +x gradlew
         ./gradlew assembleDebug
 
-    - name: Upload APK Artifact
+    - name: Find and Upload APK
       uses: actions/upload-artifact@v4
       with:
         name: app-debug.apk
-        path: KosakataApp/app/build/outputs/apk/debug/app-debug.apk
+        path: "**/app/build/outputs/apk/debug/app-debug.apk"
